@@ -5,15 +5,8 @@ M.config = {
     keymap_normal = "<leader>sq",
 }
 
-local function get_visual_selection()
-    local start_pos = vim.fn.getpos("'<")
-    local end_pos = vim.fn.getpos("'>")
-
-    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
-    local end_line, end_col = end_pos[2] - 1, end_pos[3]
-
-    local text = vim.api.nvim_buf_get_text(0, start_line, start_col, end_line, end_col, {})
-    return table.concat(text, "\n")
+function get_visual_selection()
+  return table.concat(vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos(".")), "\n")
 end
 
 local function run_is_fast(direct_mode)
@@ -23,8 +16,8 @@ local function run_is_fast(direct_mode)
         return
     end
 
-    local cmd = direct_mode and "is-fast --direct " .. vim.fn.shellescape(text)
-                           or "is-fast " .. vim.fn.shellescape(text)
+    local cmd = direct_mode and "is-fast --color=never --direct " .. vim.fn.shellescape(text)
+                           or "is-fast --color=never " .. vim.fn.shellescape(text)
     vim.notify("Running command: " .. cmd, vim.log.levels.INFO)
 
     local handle = io.popen(cmd)
