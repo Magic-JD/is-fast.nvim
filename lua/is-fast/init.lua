@@ -1,24 +1,38 @@
 local M = {}
 
+M.config = {
+    keymap_direct = "<leader>sd",
+    keymap_normal = "<leader>sq",
+}
+
 local function get_visual_selection()
     local start_pos = vim.fn.getpos("'<")
     local end_pos = vim.fn.getpos("'>")
 
-    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1  -- Convert to 0-based indexing
-    local end_line, end_col = end_pos[2] - 1, end_pos[3]  -- `end_col` is exclusive
+    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
+    local end_line, end_col = end_pos[2] - 1, end_pos[3]
 
     local text = vim.api.nvim_buf_get_text(0, start_line, start_col, end_line, end_col, {})
     return table.concat(text, "\n")
 end
 
-
-M.run_is_fast = function()
+local function run_is_fast(direct_mode)
     local text = get_visual_selection()
-    if not text then return end
-    local cmd = "is-fast --direct " .. vim.fn.shellescape(text)
+    if not text or text == "" then
+        vim.notify("No text selected!", vim.log.levels.WARN)
+        return
+    end
+
+    local cmd = direct_mode and "is-fast --direct " .. vim.fn.shellescape(text)
+                           or "is-fast " .. vim.fn.shellescape(text)
     vim.notify("Running command: " .. cmd, vim.log.levels.INFO)
 
     local handle = io.popen(cmd)
+    if not handle then
+        vim.notify("Failed to execute command: " .. cmd, vim.log.levels.ERROR)
+        return
+    end
+
     local result = handle:read("*a")
     handle:close()
 
@@ -26,11 +40,41 @@ M.run_is_fast = function()
         vim.notify("is-fast returned empty output!", vim.log.levels.WARN)
         return
     end
+
     vim.cmd("vnew")
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(result, "\n"))
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(result:gsub("\r\n", "\n"), "\n"))
+    vim.api.nvim_buf_set_option(0, "buftype", "nofile")
+    vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
+    vim.api.nvim_buf_set_option(0, "swapfile", false)
 end
 
-vim.api.nvim_set_keymap("v", "<leader>s", ":lua require('is-fast').run_is_fast()<CR>", { noremap = true, silent = true })
+M.run_is_fast_direct = function()
+    run_is_fast(true)
+end
+
+M.run_is_fast_normal = function()
+    run_is_fast(false)
+end
+
+M.setup = function(user_config)
+    M.config = vim.tbl_deep_extend("force", M.config, user_config or {})
+
+    -- Set up the keymaps if configured
+    if M.config.keymap_normal then
+        vim.keymap.set("v", M.config.keymap_normal, M.run_is_fast_normal, {
+            noremap = true,
+            silent = true,
+            desc = "Run selected text through is-fast",
+        })
+    end
+
+    if M.config.keymap_direct then
+        vim.keymap.set("v", M.config.keymap_direct, M.run_is_fast_direct, {
+            noremap = true,
+            silent = true,
+            desc = "Run selected text through is-fast (direct mode)",
+        })
+    end
+end
 
 return M
-
