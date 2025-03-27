@@ -1,6 +1,7 @@
 # is-fast.nvim
 
 A Neovim plugin that executes selected text through the [`is-fast`](https://github.com/Magic-JD/is-fast) CLI tool and displays results in a new buffer.
+Requires installation of the is-fast tool.
 
 ---
 
@@ -14,6 +15,8 @@ A Neovim plugin that executes selected text through the [`is-fast`](https://gith
 ---
 
 ## Installation  
+
+Install `is-fast` latest version [here](https://github.com/Magic-JD/is-fast)
 
 ### Packer.nvim  
 ```lua  
