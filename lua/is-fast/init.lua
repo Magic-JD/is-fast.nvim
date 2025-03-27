@@ -18,7 +18,6 @@ local function run_is_fast(direct_mode)
 
     local cmd = direct_mode and "is-fast --color=never --direct " .. vim.fn.shellescape(text)
                            or "is-fast --color=never " .. vim.fn.shellescape(text)
-    vim.notify("Running command: " .. cmd, vim.log.levels.INFO)
 
     local handle = io.popen(cmd)
     if not handle then
