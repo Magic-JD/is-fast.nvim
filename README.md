@@ -17,6 +17,15 @@ Requires installation of the is-fast tool.
 ## Installation  
 
 Install `is-fast` latest version [here](https://github.com/Magic-JD/is-fast)
+Add the plugin to your configuration.
+
+### Lazy.nvim  
+```lua  
+{  
+  'your-username/is-fast.nvim',  
+  opts = {}  
+}  
+```
 
 ### Packer.nvim  
 ```lua  
@@ -28,22 +37,14 @@ use {
 }  
 ```
 
-### Lazy.nvim  
-```lua  
-{  
-  'your-username/is-fast.nvim',  
-  opts = {}  
-}  
-```
-
 ---
 
 ## Configuration  
 
 ```lua  
 require('is-fast').setup({  
-  keymap_normal = "<leader>sq",  # Default: Run without --direct  
-  keymap_direct = "<leader>sd"  # Default: Run with --direct flag  
+  keymap_normal = "<leader>sq",  # Default: Run as a query 
+  keymap_direct = "<leader>sd"  # Default: Find the selected url directly 
 })  
 ```
 
