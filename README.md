@@ -58,9 +58,9 @@ require('is-fast').setup({
 
 1. Select text in visual mode (`v`, `V`, or `<C-v>`)  
 2. Execute command:  
-   - `<leader>sq` - Standard mode  
-   - `<leader>sd` - Direct mode (`--direct` flag)  
-3. Results appear in new vertical split  
+   - `<leader>sq` - Standard mode - use this for making a Search Query about the selected text. 
+   - `<leader>sd` - Direct mode (`--direct` flag) - use this for searching a url directly.
+3. Results appear in new vertical split - note this may take a little time. 
 
 ---
 
